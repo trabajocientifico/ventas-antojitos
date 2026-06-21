@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1C1A17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Antojitos">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='38' fill='%231C1A17'/><text x='50%25' y='58%25' font-size='110' text-anchor='middle' dominant-baseline='middle'>🌽</text></svg>">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>🌽</text></svg>">
+<title>Ventas — Antojitos y algo más</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maiz:#F2B705;        /* amarillo maíz */
+    --maiz-osc:#D99A00;
+    --carbon:#1C1A17;      /* carbón del fogón */
+    --crema:#FBF7EE;       /* superficie de trabajo */
+    --verde:#1F8A4C;       /* efectivo / confirmar */
+    --azul:#2563EB;        /* transferencia */
+    --gris:#8B857A;
+    --linea:#E7E0D2;
+    --rojo:#C2410C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{overscroll-behavior-y:contain;touch-action:manipulation}
+  body{
+    font-family:Archivo,system-ui,sans-serif;
+    background:var(--crema);color:var(--carbon);
+    padding-bottom:230px; /* espacio para el carrito fijo */
+    line-height:1.3;
+    -webkit-text-size-adjust:100%;
+    user-select:none;-webkit-user-select:none;
+  }
+  button{touch-action:manipulation}
+  .tope{
+    background:var(--carbon);color:var(--crema);
+    padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:30;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .marca{font-weight:800;font-size:17px;letter-spacing:-.3px;display:flex;align-items:center;gap:6px;line-height:1.1}
+  .marca span{color:var(--maiz)}
+  .hoy{text-align:right;line-height:1.05}
+  .hoy small{display:block;font-size:10px;color:#b9b2a4;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+  .hoy b{font-size:18px;font-variant-numeric:tabular-nums}
+  .hoy button{
+    background:none;border:1px solid #4a463f;color:#cfc9bd;border-radius:8px;
+    font-size:10px;padding:2px 7px;margin-top:3px;font-family:inherit;cursor:pointer
+  }
+
+  .seccion{padding:14px 16px 0}
+  .etiqueta{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gris);font-weight:700;margin-bottom:8px}
+
+  /* Vendedor */
+  .vendedores{display:flex;gap:8px}
+  .vendedores button{
+    flex:1;padding:14px 11px;border:2px solid var(--linea);background:#fff;border-radius:12px;
+    font-family:inherit;font-weight:700;font-size:16px;color:var(--carbon);cursor:pointer;min-height:48px
+  }
+  .vendedores button.activo{border-color:var(--carbon);background:var(--carbon);color:var(--crema)}
+
+  /* Productos */
+  .grilla{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 16px 0}
+  .prod{
+    background:#fff;border:1px solid var(--linea);border-radius:14px;padding:14px 12px;
+    text-align:left;font-family:inherit;cursor:pointer;position:relative;
+    transition:transform .06s ease;min-height:92px;display:flex;flex-direction:column;justify-content:space-between
+  }
+  .prod:active{transform:scale(.97)}
+  .prod .nom{font-weight:700;font-size:15px;line-height:1.15}
+  .prod .pre{font-weight:800;color:var(--maiz-osc);font-size:16px;font-variant-numeric:tabular-nums;margin-top:8px}
+  .prod .badge{
+    position:absolute;top:-8px;right:-8px;background:var(--rojo);color:#fff;
+    min-width:26px;height:26px;border-radius:13px;display:none;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;padding:0 6px;box-shadow:0 2px 6px rgba(0,0,0,.25)
+  }
+  .prod.tiene .badge{display:flex}
+  .prod.tiene{border-color:var(--maiz);box-shadow:0 0 0 2px var(--maiz) inset}
+
+  /* Carrito fijo */
+  .carrito{
+    position:fixed;left:0;right:0;bottom:0;background:#fff;z-index:40;
+    border-top:1px solid var(--linea);box-shadow:0 -8px 24px rgba(0,0,0,.08);
+    border-radius:18px 18px 0 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+  .lista{max-height:110px;overflow-y:auto;margin-bottom:10px}
+  .lista:empty::after{content:'Toca un producto para empezar la venta';color:var(--gris);font-size:14px;display:block;padding:6px 0}
+  .item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--linea)}
+  .item .inom{flex:1;font-weight:700;font-size:14px}
+  .item .ctrl{display:flex;align-items:center;gap:8px}
+  .item .ctrl button{width:38px;height:38px;border-radius:10px;border:1px solid var(--linea);background:var(--crema);font-size:20px;font-weight:800;font-family:inherit;cursor:pointer}
+  .item .icant{min-width:18px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+  .item .isub{min-width:64px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+
+  .pago{display:flex;gap:8px;margin-bottom:10px}
+  .pago button{
+    flex:1;padding:13px 10px;border-radius:12px;border:2px solid var(--linea);background:#fff;
+    font-family:inherit;font-weight:700;font-size:15px;color:var(--carbon);cursor:pointer;min-height:48px
+  }
+  .pago button.activo[data-p="Efectivo"]{border-color:var(--verde);background:var(--verde);color:#fff}
+  .pago button.activo[data-p="Transferencia"]{border-color:var(--azul);background:var(--azul);color:#fff}
+
+  .fila-total{display:flex;align-items:center;gap:12px}
+  .total-num{flex:1;font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
+  .total-num small{display:block;font-size:11px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+  .registrar{
+    border:none;background:var(--maiz);color:var(--carbon);font-family:inherit;font-weight:800;
+    font-size:17px;padding:16px 22px;border-radius:14px;cursor:pointer;flex:1.4;
+  }
+  .registrar:disabled{background:var(--linea);color:var(--gris);cursor:not-allowed}
+  .registrar:active:not(:disabled){background:var(--maiz-osc)}
+
+  /* Aviso (toast) */
+  .toast{
+    position:fixed;left:50%;bottom:230px;transform:translateX(-50%) translateY(20px);
+    background:var(--carbon);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;
+    font-size:14px;opacity:0;transition:all .25s ease;z-index:50;pointer-events:none;max-width:90%;text-align:center
+  }
+  .toast.ver{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.error{background:var(--rojo)}
+</style>
+</head>
+<body>
+
+  <header class="tope">
+    <div class="marca">🌽 Antojitos<span>·</span>y algo más</div>
+    <div class="hoy">
+      <small>Vendido hoy</small>
+      <b id="totalHoy">—</b>
+      <button id="btnActualizar">Actualizar</button>
+    </div>
+  </header>
+
+  <section class="seccion">
+    <div class="etiqueta">¿Quién registra?</div>
+    <div class="vendedores" id="vendedores"></div>
+  </section>
+
+  <section class="seccion">
+    <div class="etiqueta">Productos</div>
+  </section>
+  <div class="grilla" id="grilla"></div>
+
+  <!-- Carrito fijo abajo -->
+  <div class="carrito">
+    <div class="lista" id="lista"></div>
+    <div class="pago" id="pago">
+      <button data-p="Efectivo" class="activo">💵 Efectivo</button>
+      <button data-p="Transferencia">📲 Transferencia</button>
+    </div>
+    <div class="fila-total">
+      <div class="total-num"><small>Total venta</small><span id="totalVenta">$0</span></div>
+      <button class="registrar" id="registrar" disabled>Registrar venta</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* =======================================================================
+   CONFIGURACIÓN  —  edita estas tres cosas
+   ======================================================================= */
+
+// 1) Pega aquí la URL de tu aplicación web de Apps Script (paso del README).
+const URL_APP = "https://script.google.com/macros/s/AKfycbxw3L3Xck5VNCPsfVL53aEHRxnnKGmi5Xa7y9z9zmu16RF3OkjKwlL7R5B7MnmOdjlG1w/exec";
+
+// 2) Las dos personas que registran ventas.
+const VENDEDORES = ["Valentina", "Alex"];
+
+// 3) Tus 10 productos con su precio (en pesos). Cambia nombres y precios.
+const PRODUCTOS = [
+  { nombre: "Arepa rellena de carne",  precio: 12000 },
+  { nombre: "Arepa rellena de pollo",  precio: 12000 },
+  { nombre: "Arepa rellena de queso",  precio: 8000  },
+  { nombre: "Arepa mixta",             precio: 14000 },
+  { nombre: "Empanada",                precio: 3000  },
+  { nombre: "Papa rellena",            precio: 4000  },
+  { nombre: "Papas a la francesa",     precio: 6000  },
+  { nombre: "Chuzo / pincho",          precio: 9000  },
+  { nombre: "Gaseosa",                 precio: 3500  },
+  { nombre: "Jugo natural",            precio: 5000  },
+];
+
+/* =======================================================================
+   De aquí para abajo no necesitas tocar nada.
+   ======================================================================= */
+
+const carrito = {};            // { "Nombre": cantidad }
+let vendedor = VENDEDORES[0];
+let pago = "Efectivo";
+const $ = (id) => document.getElementById(id);
+
+const pesos = (n) => "$" + Number(n).toLocaleString("es-CO");
+const vibrar = (ms) => { if (navigator.vibrate) navigator.vibrate(ms); };
+
+// ---- Construir vendedores ----
+const elVend = $("vendedores");
+VENDEDORES.forEach((v, i) => {
+  const b = document.createElement("button");
+  b.textContent = v;
+  if (i === 0) b.classList.add("activo");
+  b.onclick = () => {
+    vendedor = v;
+    [...elVend.children].forEach(x => x.classList.remove("activo"));
+    b.classList.add("activo");
+  };
+  elVend.appendChild(b);
+});
+
+// ---- Construir grilla de productos ----
+const elGrilla = $("grilla");
+PRODUCTOS.forEach(p => {
+  const b = document.createElement("button");
+  b.className = "prod";
+  b.dataset.nombre = p.nombre;
+  b.innerHTML = `<span class="badge">0</span>
+                 <span class="nom">${p.nombre}</span>
+                 <span class="pre">${pesos(p.precio)}</span>`;
+  b.onclick = () => agregar(p.nombre);
+  elGrilla.appendChild(b);
+});
+
+// ---- Pago ----
+$("pago").querySelectorAll("button").forEach(b => {
+  b.onclick = () => {
+    pago = b.dataset.p;
+    $("pago").querySelectorAll("button").forEach(x => x.classList.remove("activo"));
+    b.classList.add("activo");
+  };
+});
+
+// ---- Lógica del carrito ----
+function precioDe(nombre){ return PRODUCTOS.find(p => p.nombre === nombre).precio; }
+
+function agregar(nombre){
+  carrito[nombre] = (carrito[nombre] || 0) + 1;
+  vibrar(8);
+  pintar();
+}
+function cambiar(nombre, delta){
+  carrito[nombre] = (carrito[nombre] || 0) + delta;
+  if (carrito[nombre] <= 0) delete carrito[nombre];
+  vibrar(6);
+  pintar();
+}
+
+function pintar(){
+  // badges en productos
+  document.querySelectorAll(".prod").forEach(el => {
+    const c = carrito[el.dataset.nombre] || 0;
+    el.classList.toggle("tiene", c > 0);
+    el.querySelector(".badge").textContent = c;
+  });
+  // lista del carrito
+  const lista = $("lista"); lista.innerHTML = "";
+  let total = 0;
+  Object.keys(carrito).forEach(nombre => {
+    const cant = carrito[nombre];
+    const sub = cant * precioDe(nombre);
+    total += sub;
+    const row = document.createElement("div");
+    row.className = "item";
+    row.innerHTML = `
+      <span class="inom">${nombre}</span>
+      <span class="ctrl">
+        <button aria-label="menos">−</button>
+        <span class="icant">${cant}</span>
+        <button aria-label="más">+</button>
+      </span>
+      <span class="isub">${pesos(sub)}</span>`;
+    row.querySelectorAll("button")[0].onclick = () => cambiar(nombre, -1);
+    row.querySelectorAll("button")[1].onclick = () => cambiar(nombre, +1);
+    lista.appendChild(row);
+  });
+  $("totalVenta").textContent = pesos(total);
+  $("registrar").disabled = total <= 0;
+}
+
+// ---- Registrar venta ----
+$("registrar").onclick = async () => {
+  const items = Object.keys(carrito).map(nombre => ({
+    producto: nombre, cantidad: carrito[nombre], precio: precioDe(nombre)
+  }));
+  if (items.length === 0) return;
+
+  const btn = $("registrar");
+  btn.disabled = true; btn.textContent = "Guardando…";
+
+  const venta = {
+    vendedor, pago,
+    idVenta: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+    items
+  };
+
+  try {
+    const r = await fetch(URL_APP, {
+      method: "POST",
+      // text/plain evita el bloqueo CORS de Apps Script
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(venta)
+    });
+    const data = await r.json();
+    if (!data.ok) throw new Error(data.error || "Error");
+
+    // Limpiar y refrescar
+    for (const k in carrito) delete carrito[k];
+    pintar();
+    vibrar([15, 40, 15]);
+    aviso("✅ Venta registrada");
+    cargarTotalHoy();
+  } catch (err) {
+    vibrar([60, 50, 60]);
+    aviso("⚠️ No se pudo guardar. Revisa internet e intenta de nuevo.", true);
+  } finally {
+    btn.textContent = "Registrar venta";
+    btn.disabled = Object.keys(carrito).length === 0;
+  }
+};
+
+// ---- Total del día ----
+async function cargarTotalHoy(){
+  try {
+    const r = await fetch(URL_APP, { method: "GET" });
+    const d = await r.json();
+    $("totalHoy").textContent = pesos(d.totalHoy || 0);
+  } catch (e) {
+    $("totalHoy").textContent = "—";
+  }
+}
+$("btnActualizar").onclick = cargarTotalHoy;
+
+// ---- Aviso ----
+let tToast;
+function aviso(msg, esError){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.toggle("error", !!esError);
+  t.classList.add("ver");
+  clearTimeout(tToast);
+  tToast = setTimeout(() => t.classList.remove("ver"), 2600);
+}
+
+// Arranque
+pintar();
+if (URL_APP.startsWith("http")) cargarTotalHoy();
+else aviso("Falta pegar la URL de Apps Script en el código.", true);
+</script>
+</body>
+</html>
