@@ -20,6 +20,15 @@
     --carbon:#1C1A17; --crema:#FBF7EE;
     --verde:#1F8A4C; --azul:#2563EB;
     --gris:#8B857A; --linea:#E7E0D2; --rojo:#C2410C;
+
+    /* Color sutil por categoría (solo acentos: borde y punto) */
+    --cat-arepas:    #F2B705;  /* maíz */
+    --cat-patacona:  #16A34A;  /* verde plátano */
+    --cat-perros:    #E11D48;  /* rojo salsa */
+    --cat-picar:     #D97706;  /* ámbar fritura */
+    --cat-salchipapa:#2563EB;  /* azul */
+    --cat-adiciones: #7C3AED;  /* púrpura topping */
+    --cat-otros:     #6B7280;  /* gris pizarra */
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{overscroll-behavior-y:contain;touch-action:manipulation}
@@ -110,27 +119,37 @@
 
   .grilla{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px 320px}
   .cat-titulo{
-    grid-column:1 / -1;padding:10px 2px 2px;font-size:11px;text-transform:uppercase;
-    letter-spacing:1.2px;color:var(--gris);font-weight:800
+    grid-column:1 / -1;padding:10px 2px 2px 14px;font-size:11px;text-transform:uppercase;
+    letter-spacing:1.2px;color:var(--gris);font-weight:800;
+    display:flex;align-items:center;gap:8px;position:relative
   }
   .cat-titulo:first-child{padding-top:0}
+  .cat-titulo::before{
+    content:'';width:8px;height:8px;border-radius:50%;
+    background:var(--cat-color,var(--gris));flex-shrink:0;
+    box-shadow:0 0 0 2px rgba(255,255,255,.6)
+  }
   .prod{
     background:#fff;border:1px solid var(--linea);border-radius:14px;padding:14px 12px;
     text-align:left;cursor:pointer;position:relative;transition:transform .06s ease;
-    min-height:92px;display:flex;flex-direction:column;justify-content:space-between
+    min-height:92px;display:flex;flex-direction:column;justify-content:space-between;
+    box-shadow:inset 4px 0 0 var(--cat-color,var(--linea))
   }
   .prod:active{transform:scale(.97)}
-  .prod-info{display:flex;flex-direction:column;gap:3px}
+  .prod-info{display:flex;flex-direction:column;gap:3px;padding-left:4px}
   .prod .nom{font-weight:700;font-size:15px;line-height:1.15}
   .prod .desc{font-size:11px;color:var(--gris);font-weight:600;line-height:1.2}
-  .prod .pre{font-weight:800;color:var(--maiz-osc);font-size:16px;font-variant-numeric:tabular-nums;margin-top:8px}
+  .prod .pre{font-weight:800;color:var(--maiz-osc);font-size:16px;font-variant-numeric:tabular-nums;margin-top:8px;padding-left:4px}
   .prod .badge{
     position:absolute;top:-8px;right:-8px;background:var(--rojo);color:#fff;
     min-width:26px;height:26px;border-radius:13px;display:none;align-items:center;justify-content:center;
     font-size:13px;font-weight:800;padding:0 6px;box-shadow:0 2px 6px rgba(0,0,0,.25)
   }
   .prod.tiene .badge{display:flex}
-  .prod.tiene{border-color:var(--maiz);box-shadow:0 0 0 2px var(--maiz) inset}
+  .prod.tiene{
+    border-color:var(--maiz);
+    box-shadow:inset 4px 0 0 var(--cat-color,var(--maiz)), inset 0 0 0 2px var(--maiz)
+  }
 
   .carrito{
     position:fixed;left:0;right:0;bottom:0;background:#fff;z-index:40;
@@ -469,12 +488,24 @@ function abrirPedidoExistente(p){
 /* =======================================================================
    Vista PEDIDO — render
    ======================================================================= */
+const COLOR_CATEGORIA = {
+  "Arepas":     "var(--cat-arepas)",
+  "Patacona":   "var(--cat-patacona)",
+  "Perros":     "var(--cat-perros)",
+  "Para picar": "var(--cat-picar)",
+  "Salchipapa": "var(--cat-salchipapa)",
+  "Adiciones":  "var(--cat-adiciones)",
+  "Otros":      "var(--cat-otros)",
+};
+
 const elGrilla = $("grilla");
 let ultimaCategoria = null;
 PRODUCTOS.forEach(p => {
+  const color = COLOR_CATEGORIA[p.categoria] || "var(--gris)";
   if (p.categoria && p.categoria !== ultimaCategoria) {
     const h = document.createElement("div");
     h.className = "cat-titulo";
+    h.style.setProperty("--cat-color", color);
     h.textContent = p.categoria;
     elGrilla.appendChild(h);
     ultimaCategoria = p.categoria;
@@ -482,6 +513,7 @@ PRODUCTOS.forEach(p => {
   const b = document.createElement("button");
   b.className = "prod";
   b.dataset.nombre = p.nombre;
+  b.style.setProperty("--cat-color", color);
   const desc = p.descripcion ? `<span class="desc">${p.descripcion}</span>` : "";
   b.innerHTML = `<span class="badge">0</span>
                  <span class="prod-info">
