@@ -46,9 +46,56 @@
     background:var(--carbon);color:var(--crema);
     padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
     display:flex;align-items:center;justify-content:space-between;gap:12px;
+    position:relative;overflow:hidden;isolation:isolate;
   }
-  .marca{font-weight:800;font-size:17px;letter-spacing:-.3px;display:flex;align-items:center;gap:6px;line-height:1.1}
-  .marca span{color:var(--maiz)}
+
+  /* Destello sutil que cruza la barra cada pocos segundos */
+  .tope::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:linear-gradient(115deg,
+      transparent 0%, transparent 42%,
+      rgba(255,255,255,.05) 47%, rgba(255,255,255,.11) 50%, rgba(255,255,255,.05) 53%,
+      transparent 58%, transparent 100%);
+    background-size:280% 100%;
+    background-position:-120% 0;
+    animation:topeShine 7s ease-in-out infinite;
+  }
+  /* Línea neón animada en el borde inferior */
+  .tope::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:2px;pointer-events:none;z-index:1;
+    background:linear-gradient(90deg,
+      #FF4DD8 0%, #00E5FF 25%, #F2B705 50%, #62F764 75%, #FF4DD8 100%);
+    background-size:200% 100%;
+    animation:neonShift 4.5s linear infinite;
+    filter:drop-shadow(0 0 4px rgba(255,77,216,.55)) drop-shadow(0 0 6px rgba(0,229,255,.35));
+  }
+  .tope > *{position:relative;z-index:2}
+
+  @keyframes topeShine{
+    0%, 35%  { background-position:-120% 0; }
+    65%      { background-position:220% 0; }
+    100%     { background-position:220% 0; }
+  }
+  @keyframes neonShift{
+    to { background-position:-200% 0; }
+  }
+
+  .marca{font-weight:800;font-size:17px;letter-spacing:-.3px;display:flex;align-items:center;gap:7px;line-height:1.1}
+  .marca .sep{
+    width:8px;height:8px;border-radius:50%;flex-shrink:0;
+    background:var(--maiz);
+    box-shadow:0 0 5px rgba(242,183,5,.85), 0 0 12px rgba(242,183,5,.45);
+    animation:sepGlow 3.2s ease-in-out infinite;
+  }
+  @keyframes sepGlow{
+    0%, 100% { background:#F2B705; box-shadow:0 0 5px rgba(242,183,5,.9),  0 0 12px rgba(242,183,5,.5); }
+    33%      { background:#00E5FF; box-shadow:0 0 6px rgba(0,229,255,.9),  0 0 14px rgba(0,229,255,.5); }
+    66%      { background:#FF4DD8; box-shadow:0 0 6px rgba(255,77,216,.9), 0 0 14px rgba(255,77,216,.5); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .tope::before, .tope::after, .marca .sep { animation:none }
+  }
   .hoy{text-align:right;line-height:1.1}
   .hoy small{display:block;font-size:10px;color:#b9b2a4;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
   .hoy b{font-size:18px;font-variant-numeric:tabular-nums}
@@ -197,7 +244,12 @@
   <!-- Cabecera común (visible en las dos vistas) -->
   <div class="cabecera">
     <header class="tope">
-      <div class="marca">🫓 Antojitos<span>·</span>y algo más</div>
+      <div class="marca">
+        <span aria-hidden="true">🫓</span>
+        <span>Antojitos</span>
+        <span class="sep" aria-hidden="true"></span>
+        <span>y algo más</span>
+      </div>
       <div class="hoy">
         <small>Vendido hoy</small>
         <b id="totalHoy">—</b>
