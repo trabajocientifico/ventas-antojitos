@@ -57,8 +57,8 @@ function doGet() {
     const idP = f[COL.idPedido];
 
     if (estado === 'abierto') {
-      const fa = f[COL.fechaApertura];
-      if (!(fa instanceof Date)) continue;
+      const fa = aFecha_(f[COL.fechaApertura]);
+      if (!fa) continue;
       if (!abiertosMap[idP]) {
         abiertosMap[idP] = {
           idPedido: idP,
@@ -77,8 +77,8 @@ function doGet() {
       });
       abiertosMap[idP].total += sub;
     } else if (estado === 'pagado') {
-      const fc = f[COL.fechaCobro];
-      if (!(fc instanceof Date)) continue;
+      const fc = aFecha_(f[COL.fechaCobro]);
+      if (!fc) continue;
       if (Utilities.formatDate(fc, ZONA_HORARIA, 'yyyy-MM-dd') !== hoy) continue;
       totalHoy += sub;
       if (String(f[COL.pago] || '').toLowerCase().indexOf('efect') >= 0) efectivo += sub;
@@ -162,8 +162,15 @@ function guardar_(d, cobrando) {
     ];
   });
 
-  hoja.getRange(hoja.getLastRow() + 1, 1, filas.length, ENCABEZADOS.length)
-      .setValues(filas);
+  const filaInicio = hoja.getLastRow() + 1;
+  hoja.getRange(filaInicio, 1, filas.length, ENCABEZADOS.length).setValues(filas);
+
+  // Asegura que las columnas de fecha se guarden con formato de fecha
+  // (de lo contrario doGet puede recibirlas como string y descartarlas).
+  hoja.getRange(filaInicio, COL.fechaApertura + 1, filas.length, 1)
+      .setNumberFormat('yyyy-mm-dd hh:mm:ss');
+  hoja.getRange(filaInicio, COL.fechaCobro + 1, filas.length, 1)
+      .setNumberFormat('yyyy-mm-dd hh:mm:ss');
 
   return { pedido: numPedido, idPedido: idPedido, total: total };
 }
@@ -203,8 +210,8 @@ function siguienteNumeroPedido_(datos) {
   const hoy = formatoHoy_();
   let max = 0;
   for (let i = 1; i < datos.length; i++) {
-    const fa = datos[i][COL.fechaApertura];
-    if (!(fa instanceof Date)) continue;
+    const fa = aFecha_(datos[i][COL.fechaApertura]);
+    if (!fa) continue;
     const esHoy = Utilities.formatDate(fa, ZONA_HORARIA, 'yyyy-MM-dd') === hoy;
     const esAbierto = String(datos[i][COL.estado] || '').toLowerCase() === 'abierto';
     if (!esHoy && !esAbierto) continue;
@@ -212,6 +219,29 @@ function siguienteNumeroPedido_(datos) {
     if (n > max) max = n;
   }
   return max + 1;
+}
+
+/**
+ * Convierte a Date un valor leído de la hoja, sea cual sea su formato:
+ * Date nativo, string ISO o legible, o número serial de Sheets/Excel.
+ * Devuelve null si no se puede interpretar.
+ */
+function aFecha_(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  if (typeof v === 'number' && isFinite(v)) {
+    // Serial de Sheets: días desde 1899-12-30
+    const ms = Math.round((v - 25569) * 86400000);
+    const d = new Date(ms);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if (typeof v === 'string') {
+    const s = v.trim();
+    if (!s) return null;
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  return null;
 }
 
 function nuevoIdPedido_() {
@@ -233,6 +263,11 @@ function obtenerHoja_() {
     hoja.appendRow(ENCABEZADOS);
     hoja.setFrozenRows(1);
   }
+  // Garantiza que las columnas de fecha NO queden formateadas como texto.
+  hoja.getRange(2, COL.fechaApertura + 1, hoja.getMaxRows() - 1, 1)
+      .setNumberFormat('yyyy-mm-dd hh:mm:ss');
+  hoja.getRange(2, COL.fechaCobro + 1, hoja.getMaxRows() - 1, 1)
+      .setNumberFormat('yyyy-mm-dd hh:mm:ss');
   return hoja;
 }
 
