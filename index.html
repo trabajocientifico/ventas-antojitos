@@ -10,65 +10,109 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='38' fill='%231C1A17'/><text x='50%25' y='58%25' font-size='110' text-anchor='middle' dominant-baseline='middle'>🌽</text></svg>">
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>🌽</text></svg>">
-<title>Ventas — Antojitos y algo más</title>
+<title>Pedidos — Antojitos y algo más</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --maiz:#F2B705;        /* amarillo maíz */
-    --maiz-osc:#D99A00;
-    --carbon:#1C1A17;      /* carbón del fogón */
-    --crema:#FBF7EE;       /* superficie de trabajo */
-    --verde:#1F8A4C;       /* efectivo / confirmar */
-    --azul:#2563EB;        /* transferencia */
-    --gris:#8B857A;
-    --linea:#E7E0D2;
-    --rojo:#C2410C;
+    --maiz:#F2B705; --maiz-osc:#D99A00;
+    --carbon:#1C1A17; --crema:#FBF7EE;
+    --verde:#1F8A4C; --azul:#2563EB;
+    --gris:#8B857A; --linea:#E7E0D2; --rojo:#C2410C;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{overscroll-behavior-y:contain;touch-action:manipulation}
   body{
     font-family:Archivo,system-ui,sans-serif;
-    background:var(--crema);color:var(--carbon);
-    padding-bottom:230px; /* espacio para el carrito fijo */
-    line-height:1.3;
-    -webkit-text-size-adjust:100%;
-    user-select:none;-webkit-user-select:none;
+    background:var(--crema);color:var(--carbon);line-height:1.3;
+    -webkit-text-size-adjust:100%;user-select:none;-webkit-user-select:none;
   }
-  button{touch-action:manipulation}
+  button{touch-action:manipulation;font-family:inherit}
+  input{font-family:inherit;-webkit-user-select:text;user-select:text}
+
+  /* ===== Cabecera (sticky) ===== */
+  .cabecera{position:sticky;top:0;z-index:30}
   .tope{
     background:var(--carbon);color:var(--crema);
-    padding:calc(14px + env(safe-area-inset-top)) 16px 14px;position:sticky;top:0;z-index:30;
+    padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
     display:flex;align-items:center;justify-content:space-between;gap:12px;
   }
   .marca{font-weight:800;font-size:17px;letter-spacing:-.3px;display:flex;align-items:center;gap:6px;line-height:1.1}
   .marca span{color:var(--maiz)}
-  .hoy{text-align:right;line-height:1.05}
+  .hoy{text-align:right;line-height:1.1}
   .hoy small{display:block;font-size:10px;color:#b9b2a4;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
   .hoy b{font-size:18px;font-variant-numeric:tabular-nums}
-  .hoy button{
-    background:none;border:1px solid #4a463f;color:#cfc9bd;border-radius:8px;
-    font-size:10px;padding:2px 7px;margin-top:3px;font-family:inherit;cursor:pointer
-  }
+  .hoy em{display:block;font-style:normal;font-size:10px;color:#b9b2a4;margin-top:2px}
 
-  .seccion{padding:14px 16px 0}
-  .etiqueta{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gris);font-weight:700;margin-bottom:8px}
-
-  /* Vendedor */
-  .vendedores{display:flex;gap:8px}
+  .vendedores{display:flex;gap:8px;padding:10px 16px;background:var(--crema);border-bottom:1px solid var(--linea)}
   .vendedores button{
-    flex:1;padding:14px 11px;border:2px solid var(--linea);background:#fff;border-radius:12px;
-    font-family:inherit;font-weight:700;font-size:16px;color:var(--carbon);cursor:pointer;min-height:48px
+    flex:1;padding:11px;border:2px solid var(--linea);background:#fff;border-radius:10px;
+    font-weight:700;font-size:15px;color:var(--carbon);cursor:pointer;min-height:44px
   }
   .vendedores button.activo{border-color:var(--carbon);background:var(--carbon);color:var(--crema)}
 
-  /* Productos */
-  .grilla{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 16px 0}
+  /* ===== Vista LISTA ===== */
+  .seccion-titulo{
+    padding:18px 16px 8px;font-size:11px;text-transform:uppercase;letter-spacing:1px;
+    color:var(--gris);font-weight:700;display:flex;justify-content:space-between;align-items:center
+  }
+  .seccion-titulo button{
+    background:none;border:none;color:var(--gris);font-weight:700;font-size:11px;
+    text-transform:uppercase;letter-spacing:1px;cursor:pointer;padding:4px 6px
+  }
+  .lista-cuentas{padding:0 16px 110px;display:flex;flex-direction:column;gap:10px}
+  .cuenta{
+    background:#fff;border:1px solid var(--linea);border-radius:14px;padding:14px;
+    display:flex;flex-direction:column;gap:6px;cursor:pointer;text-align:left;width:100%;
+    transition:transform .06s ease;
+  }
+  .cuenta:active{transform:scale(.985)}
+  .cuenta .fila1{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .cuenta .num{font-weight:800;font-size:17px}
+  .cuenta .num .cli{font-weight:700;color:#3a3631;font-size:15px;margin-left:6px}
+  .cuenta .tot{font-weight:800;font-size:18px;color:var(--carbon);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .cuenta .fila2{font-size:12px;color:var(--gris);font-weight:600}
+  .vacio{padding:50px 24px;text-align:center;color:var(--gris);font-size:14px}
+  .vacio .ic{display:block;font-size:42px;margin-bottom:10px;opacity:.4}
+
+  .fab{
+    position:fixed;left:16px;right:16px;
+    bottom:calc(14px + env(safe-area-inset-bottom));z-index:35;
+    background:var(--maiz);color:var(--carbon);border:none;border-radius:14px;
+    padding:18px;font-weight:800;font-size:17px;cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);min-height:58px;
+  }
+  .fab:active{background:var(--maiz-osc)}
+
+  /* ===== Vista PEDIDO ===== */
+  .pedido-tope{
+    display:flex;align-items:center;gap:8px;padding:10px 12px;
+    background:#fff;border-bottom:1px solid var(--linea)
+  }
+  .pedido-tope .atras{
+    background:none;border:none;font-size:24px;width:44px;height:44px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--carbon);font-weight:800
+  }
+  .pedido-tope .titulo{flex:1;font-weight:800;font-size:17px;line-height:1.15}
+  .pedido-tope .titulo small{display:block;color:var(--gris);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+  .pedido-tope .anular{
+    background:none;border:1px solid var(--linea);color:var(--rojo);font-weight:700;font-size:12px;
+    padding:8px 12px;border-radius:8px;cursor:pointer
+  }
+  .cliente-input{
+    width:calc(100% - 32px);margin:12px 16px 0;padding:14px;border-radius:12px;
+    border:2px solid var(--linea);background:#fff;font-size:16px;font-weight:600;
+    color:var(--carbon);outline:none
+  }
+  .cliente-input:focus{border-color:var(--maiz)}
+  .cliente-input::placeholder{color:#bcb5a6;font-weight:500}
+
+  .grilla{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px 320px}
   .prod{
     background:#fff;border:1px solid var(--linea);border-radius:14px;padding:14px 12px;
-    text-align:left;font-family:inherit;cursor:pointer;position:relative;
-    transition:transform .06s ease;min-height:92px;display:flex;flex-direction:column;justify-content:space-between
+    text-align:left;cursor:pointer;position:relative;transition:transform .06s ease;
+    min-height:92px;display:flex;flex-direction:column;justify-content:space-between
   }
   .prod:active{transform:scale(.97)}
   .prod .nom{font-weight:700;font-size:15px;line-height:1.15}
@@ -81,97 +125,106 @@
   .prod.tiene .badge{display:flex}
   .prod.tiene{border-color:var(--maiz);box-shadow:0 0 0 2px var(--maiz) inset}
 
-  /* Carrito fijo */
   .carrito{
     position:fixed;left:0;right:0;bottom:0;background:#fff;z-index:40;
-    border-top:1px solid var(--linea);box-shadow:0 -8px 24px rgba(0,0,0,.08);
+    border-top:1px solid var(--linea);box-shadow:0 -8px 24px rgba(0,0,0,.10);
     border-radius:18px 18px 0 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;max-height:62vh;
   }
-  .lista{max-height:110px;overflow-y:auto;margin-bottom:10px}
-  .lista:empty::after{content:'Toca un producto para empezar la venta';color:var(--gris);font-size:14px;display:block;padding:6px 0}
-  .item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--linea)}
+  .lista{flex:1;overflow-y:auto;margin-bottom:8px;min-height:0;max-height:160px}
+  .lista:empty::after{content:'Toca un producto para empezar';color:var(--gris);font-size:14px;display:block;padding:8px 0;text-align:center}
+  .item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--linea)}
   .item .inom{flex:1;font-weight:700;font-size:14px}
-  .item .ctrl{display:flex;align-items:center;gap:8px}
-  .item .ctrl button{width:38px;height:38px;border-radius:10px;border:1px solid var(--linea);background:var(--crema);font-size:20px;font-weight:800;font-family:inherit;cursor:pointer}
-  .item .icant{min-width:18px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
-  .item .isub{min-width:64px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+  .item .ctrl{display:flex;align-items:center;gap:6px}
+  .item .ctrl button{width:38px;height:38px;border-radius:10px;border:1px solid var(--linea);background:var(--crema);font-size:20px;font-weight:800;cursor:pointer}
+  .item .icant{min-width:22px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+  .item .isub{min-width:68px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
 
-  .pago{display:flex;gap:8px;margin-bottom:10px}
-  .pago button{
-    flex:1;padding:13px 10px;border-radius:12px;border:2px solid var(--linea);background:#fff;
-    font-family:inherit;font-weight:700;font-size:15px;color:var(--carbon);cursor:pointer;min-height:48px
+  .fila-total{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .total-num{flex:1;font-weight:800;font-size:24px;font-variant-numeric:tabular-nums}
+  .total-num small{display:block;font-size:10px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:1px}
+
+  .acciones{display:flex;gap:8px}
+  .acciones button{
+    flex:1;border:none;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;
+    padding:14px 4px;min-height:54px;color:#fff;line-height:1.1
   }
-  .pago button.activo[data-p="Efectivo"]{border-color:var(--verde);background:var(--verde);color:#fff}
-  .pago button.activo[data-p="Transferencia"]{border-color:var(--azul);background:var(--azul);color:#fff}
+  .acciones .guardar{background:var(--carbon);color:var(--crema)}
+  .acciones .efectivo{background:var(--verde)}
+  .acciones .transferencia{background:var(--azul)}
+  .acciones button:disabled{background:var(--linea);color:var(--gris);cursor:not-allowed}
+  .acciones button:active:not(:disabled){opacity:.85}
 
-  .fila-total{display:flex;align-items:center;gap:12px}
-  .total-num{flex:1;font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
-  .total-num small{display:block;font-size:11px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:1px}
-  .registrar{
-    border:none;background:var(--maiz);color:var(--carbon);font-family:inherit;font-weight:800;
-    font-size:17px;padding:16px 22px;border-radius:14px;cursor:pointer;flex:1.4;
-  }
-  .registrar:disabled{background:var(--linea);color:var(--gris);cursor:not-allowed}
-  .registrar:active:not(:disabled){background:var(--maiz-osc)}
-
-  /* Aviso (toast) */
   .toast{
-    position:fixed;left:50%;bottom:230px;transform:translateX(-50%) translateY(20px);
+    position:fixed;left:50%;bottom:30%;transform:translateX(-50%) translateY(20px);
     background:var(--carbon);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;
-    font-size:14px;opacity:0;transition:all .25s ease;z-index:50;pointer-events:none;max-width:90%;text-align:center
+    font-size:14px;opacity:0;transition:all .25s ease;z-index:60;pointer-events:none;max-width:90%;text-align:center
   }
   .toast.ver{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast.error{background:var(--rojo)}
+
+  .oculto{display:none !important}
 </style>
 </head>
 <body>
 
-  <header class="tope">
-    <div class="marca">🌽 Antojitos<span>·</span>y algo más</div>
-    <div class="hoy">
-      <small>Vendido hoy</small>
-      <b id="totalHoy">—</b>
-      <button id="btnActualizar">Actualizar</button>
-    </div>
-  </header>
-
-  <section class="seccion">
-    <div class="etiqueta">¿Quién registra?</div>
+  <!-- Cabecera común (visible en las dos vistas) -->
+  <div class="cabecera">
+    <header class="tope">
+      <div class="marca">🌽 Antojitos<span>·</span>y algo más</div>
+      <div class="hoy">
+        <small>Vendido hoy</small>
+        <b id="totalHoy">—</b>
+        <em id="ventasHoy">—</em>
+      </div>
+    </header>
     <div class="vendedores" id="vendedores"></div>
-  </section>
-
-  <section class="seccion">
-    <div class="etiqueta">Productos</div>
-  </section>
-  <div class="grilla" id="grilla"></div>
-
-  <!-- Carrito fijo abajo -->
-  <div class="carrito">
-    <div class="lista" id="lista"></div>
-    <div class="pago" id="pago">
-      <button data-p="Efectivo" class="activo">💵 Efectivo</button>
-      <button data-p="Transferencia">📲 Transferencia</button>
-    </div>
-    <div class="fila-total">
-      <div class="total-num"><small>Total venta</small><span id="totalVenta">$0</span></div>
-      <button class="registrar" id="registrar" disabled>Registrar venta</button>
-    </div>
   </div>
+
+  <!-- VISTA: lista de cuentas abiertas -->
+  <main id="vistaLista">
+    <div class="seccion-titulo">
+      <span>Cuentas abiertas</span>
+      <button id="btnActualizar">↻ Actualizar</button>
+    </div>
+    <div class="lista-cuentas" id="listaCuentas"></div>
+    <button class="fab" id="btnNuevo">+ Nuevo pedido</button>
+  </main>
+
+  <!-- VISTA: detalle de un pedido (nuevo o existente) -->
+  <main id="vistaPedido" class="oculto">
+    <div class="pedido-tope">
+      <button class="atras" id="btnAtras" aria-label="Volver">←</button>
+      <div class="titulo" id="tituloPedido">Nuevo pedido<small id="subtituloPedido">Sin guardar</small></div>
+      <button class="anular oculto" id="btnAnular">Anular</button>
+    </div>
+    <input class="cliente-input" id="inputCliente" type="text"
+           placeholder="Cliente o mesa (ej.: Mesa 2, Juan, Para llevar…)"
+           maxlength="40" autocomplete="off">
+    <div class="grilla" id="grilla"></div>
+    <div class="carrito">
+      <div class="lista" id="lista"></div>
+      <div class="fila-total">
+        <div class="total-num"><small>Total</small><span id="totalVenta">$0</span></div>
+      </div>
+      <div class="acciones">
+        <button class="guardar" id="btnGuardar" disabled>💾 Guardar</button>
+        <button class="efectivo" id="btnEfectivo" disabled>💵 Efectivo</button>
+        <button class="transferencia" id="btnTransfer" disabled>📲 Transfer.</button>
+      </div>
+    </div>
+  </main>
 
   <div class="toast" id="toast"></div>
 
 <script>
 /* =======================================================================
-   CONFIGURACIÓN  —  edita estas tres cosas
+   CONFIGURACIÓN
    ======================================================================= */
-
-// 1) Pega aquí la URL de tu aplicación web de Apps Script (paso del README).
 const URL_APP = "https://script.google.com/macros/s/AKfycbxw3L3Xck5VNCPsfVL53aEHRxnnKGmi5Xa7y9z9zmu16RF3OkjKwlL7R5B7MnmOdjlG1w/exec";
 
-// 2) Las dos personas que registran ventas.
 const VENDEDORES = ["Valentina", "Alex"];
 
-// 3) Tus 10 productos con su precio (en pesos). Cambia nombres y precios.
 const PRODUCTOS = [
   { nombre: "Arepa rellena de carne",  precio: 12000 },
   { nombre: "Arepa rellena de pollo",  precio: 12000 },
@@ -186,32 +239,182 @@ const PRODUCTOS = [
 ];
 
 /* =======================================================================
-   De aquí para abajo no necesitas tocar nada.
+   Estado y utilidades
    ======================================================================= */
-
-const carrito = {};            // { "Nombre": cantidad }
-let vendedor = VENDEDORES[0];
-let pago = "Efectivo";
 const $ = (id) => document.getElementById(id);
-
-const pesos = (n) => "$" + Number(n).toLocaleString("es-CO");
+const pesos = (n) => "$" + Number(n || 0).toLocaleString("es-CO");
 const vibrar = (ms) => { if (navigator.vibrate) navigator.vibrate(ms); };
 
-// ---- Construir vendedores ----
-const elVend = $("vendedores");
-VENDEDORES.forEach((v, i) => {
-  const b = document.createElement("button");
-  b.textContent = v;
-  if (i === 0) b.classList.add("activo");
-  b.onclick = () => {
-    vendedor = v;
-    [...elVend.children].forEach(x => x.classList.remove("activo"));
-    b.classList.add("activo");
-  };
-  elVend.appendChild(b);
-});
+let vendedor = localStorage.getItem("vendedor") || VENDEDORES[0];
+if (!VENDEDORES.includes(vendedor)) vendedor = VENDEDORES[0];
 
-// ---- Construir grilla de productos ----
+let vista = "lista";              // "lista" | "pedido"
+let cuentasAbiertas = [];         // viene del backend
+let pedidoActual = null;          // { idPedido?, numPedido?, cliente, carrito, esNuevo }
+let pollHandle = null;
+let guardando = false;
+
+function precioDe(nombre){
+  const p = PRODUCTOS.find(x => x.nombre === nombre);
+  return p ? p.precio : 0;
+}
+
+function tiempoTranscurrido(ms){
+  const diff = Date.now() - ms;
+  const min = Math.floor(diff / 60000);
+  if (min < 1)   return "recién";
+  if (min < 60)  return `hace ${min} min`;
+  const h = Math.floor(min/60), m = min%60;
+  return m ? `hace ${h}h ${m}m` : `hace ${h}h`;
+}
+
+/* =======================================================================
+   Vendedores
+   ======================================================================= */
+const elVend = $("vendedores");
+function pintarVendedores(){
+  elVend.innerHTML = "";
+  VENDEDORES.forEach(v => {
+    const b = document.createElement("button");
+    b.textContent = v;
+    if (v === vendedor) b.classList.add("activo");
+    b.onclick = () => {
+      vendedor = v;
+      localStorage.setItem("vendedor", v);
+      pintarVendedores();
+      vibrar(6);
+    };
+    elVend.appendChild(b);
+  });
+}
+pintarVendedores();
+
+/* =======================================================================
+   Vista LISTA
+   ======================================================================= */
+function pintarLista(){
+  const cont = $("listaCuentas");
+  cont.innerHTML = "";
+  if (cuentasAbiertas.length === 0) {
+    cont.innerHTML = `<div class="vacio"><span class="ic">🧾</span>
+      No hay cuentas abiertas.<br>Toca <b>+ Nuevo pedido</b> para empezar.</div>`;
+    return;
+  }
+  cuentasAbiertas.forEach(p => {
+    const cant = p.items.reduce((s,it)=>s+it.cantidad, 0);
+    const cli = p.cliente ? p.cliente : "Sin nombre";
+    const card = document.createElement("button");
+    card.className = "cuenta";
+    card.innerHTML = `
+      <div class="fila1">
+        <div class="num">#${p.pedido}<span class="cli"> · ${cli}</span></div>
+        <div class="tot">${pesos(p.total)}</div>
+      </div>
+      <div class="fila2">${p.vendedor} · ${tiempoTranscurrido(p.abierta)} · ${cant} ${cant===1?'producto':'productos'}</div>
+    `;
+    card.onclick = () => abrirPedidoExistente(p);
+    cont.appendChild(card);
+  });
+}
+
+async function cargarEstado(){
+  try {
+    const r = await fetch(URL_APP, { method: "GET" });
+    const d = await r.json();
+    if (!d.ok) return;
+    cuentasAbiertas = d.abiertos || [];
+    $("totalHoy").textContent = pesos(d.totalHoy);
+    const n = d.ventas || 0;
+    $("ventasHoy").textContent = n + (n === 1 ? " pedido" : " pedidos");
+    if (vista === "lista") pintarLista();
+  } catch (e) { /* silencioso, reintenta en el próximo poll */ }
+}
+
+function iniciarPoll(){
+  pararPoll();
+  pollHandle = setInterval(() => {
+    if (document.visibilityState === "visible" && vista === "lista" && !guardando) {
+      cargarEstado();
+    }
+  }, 5000);
+}
+function pararPoll(){
+  if (pollHandle) clearInterval(pollHandle);
+  pollHandle = null;
+}
+
+$("btnActualizar").onclick = () => { vibrar(6); cargarEstado(); };
+
+/* =======================================================================
+   Navegación entre vistas
+   ======================================================================= */
+function irALista(){
+  vista = "lista";
+  $("vistaPedido").classList.add("oculto");
+  $("vistaLista").classList.remove("oculto");
+  pedidoActual = null;
+  window.scrollTo(0, 0);
+  cargarEstado();
+}
+
+function irAPedido(){
+  vista = "pedido";
+  $("vistaLista").classList.add("oculto");
+  $("vistaPedido").classList.remove("oculto");
+  window.scrollTo(0, 0);
+  pintarPedido();
+}
+
+$("btnAtras").onclick = () => {
+  if (tieneCambiosSinGuardar() && !confirm("Tienes cambios sin guardar. ¿Salir de todos modos?")) return;
+  irALista();
+};
+
+function tieneCambiosSinGuardar(){
+  if (!pedidoActual) return false;
+  if (pedidoActual.esNuevo) {
+    return Object.keys(pedidoActual.carrito).length > 0;
+  }
+  // Comparar carrito actual vs el original (snapshot guardado al abrir)
+  const orig = pedidoActual.original || {};
+  const act = pedidoActual.carrito;
+  const claves = new Set([...Object.keys(orig), ...Object.keys(act)]);
+  for (const k of claves) if ((orig[k]||0) !== (act[k]||0)) return true;
+  if ((pedidoActual.original_cliente || "") !== (pedidoActual.cliente || "")) return true;
+  return false;
+}
+
+/* =======================================================================
+   Nuevo pedido / abrir pedido existente
+   ======================================================================= */
+$("btnNuevo").onclick = () => {
+  pedidoActual = { cliente: "", carrito: {}, esNuevo: true };
+  vibrar(8);
+  irAPedido();
+};
+
+function abrirPedidoExistente(p){
+  const carrito = {};
+  p.items.forEach(it => {
+    carrito[it.producto] = (carrito[it.producto] || 0) + it.cantidad;
+  });
+  pedidoActual = {
+    idPedido: p.idPedido,
+    numPedido: p.pedido,
+    cliente: p.cliente || "",
+    carrito: carrito,
+    esNuevo: false,
+    original: Object.assign({}, carrito),
+    original_cliente: p.cliente || "",
+    vendedorOrig: p.vendedor || ""
+  };
+  vibrar(8);
+  irAPedido();
+}
+
+/* =======================================================================
+   Vista PEDIDO — render
+   ======================================================================= */
 const elGrilla = $("grilla");
 PRODUCTOS.forEach(p => {
   const b = document.createElement("button");
@@ -224,42 +427,49 @@ PRODUCTOS.forEach(p => {
   elGrilla.appendChild(b);
 });
 
-// ---- Pago ----
-$("pago").querySelectorAll("button").forEach(b => {
-  b.onclick = () => {
-    pago = b.dataset.p;
-    $("pago").querySelectorAll("button").forEach(x => x.classList.remove("activo"));
-    b.classList.add("activo");
-  };
+$("inputCliente").addEventListener("input", (e) => {
+  if (pedidoActual) pedidoActual.cliente = e.target.value;
 });
 
-// ---- Lógica del carrito ----
-function precioDe(nombre){ return PRODUCTOS.find(p => p.nombre === nombre).precio; }
-
 function agregar(nombre){
-  carrito[nombre] = (carrito[nombre] || 0) + 1;
+  pedidoActual.carrito[nombre] = (pedidoActual.carrito[nombre] || 0) + 1;
   vibrar(8);
-  pintar();
+  pintarCarrito();
 }
 function cambiar(nombre, delta){
-  carrito[nombre] = (carrito[nombre] || 0) + delta;
-  if (carrito[nombre] <= 0) delete carrito[nombre];
+  pedidoActual.carrito[nombre] = (pedidoActual.carrito[nombre] || 0) + delta;
+  if (pedidoActual.carrito[nombre] <= 0) delete pedidoActual.carrito[nombre];
   vibrar(6);
-  pintar();
+  pintarCarrito();
 }
 
-function pintar(){
+function pintarPedido(){
+  // Título
+  if (pedidoActual.esNuevo) {
+    $("tituloPedido").firstChild.textContent = "Nuevo pedido";
+    $("subtituloPedido").textContent = "Sin guardar";
+    $("btnAnular").classList.add("oculto");
+  } else {
+    $("tituloPedido").firstChild.textContent = `Pedido #${pedidoActual.numPedido}`;
+    $("subtituloPedido").textContent = "Cuenta abierta";
+    $("btnAnular").classList.remove("oculto");
+  }
+  $("inputCliente").value = pedidoActual.cliente || "";
+  pintarCarrito();
+}
+
+function pintarCarrito(){
   // badges en productos
   document.querySelectorAll(".prod").forEach(el => {
-    const c = carrito[el.dataset.nombre] || 0;
+    const c = pedidoActual.carrito[el.dataset.nombre] || 0;
     el.classList.toggle("tiene", c > 0);
     el.querySelector(".badge").textContent = c;
   });
   // lista del carrito
   const lista = $("lista"); lista.innerHTML = "";
   let total = 0;
-  Object.keys(carrito).forEach(nombre => {
-    const cant = carrito[nombre];
+  Object.keys(pedidoActual.carrito).forEach(nombre => {
+    const cant = pedidoActual.carrito[nombre];
     const sub = cant * precioDe(nombre);
     total += sub;
     const row = document.createElement("div");
@@ -277,63 +487,108 @@ function pintar(){
     lista.appendChild(row);
   });
   $("totalVenta").textContent = pesos(total);
-  $("registrar").disabled = total <= 0;
+  const hayItems = total > 0;
+  $("btnGuardar").disabled = !hayItems || guardando;
+  $("btnEfectivo").disabled = !hayItems || guardando;
+  $("btnTransfer").disabled = !hayItems || guardando;
 }
 
-// ---- Registrar venta ----
-$("registrar").onclick = async () => {
-  const items = Object.keys(carrito).map(nombre => ({
-    producto: nombre, cantidad: carrito[nombre], precio: precioDe(nombre)
+/* =======================================================================
+   Guardar / cobrar / anular
+   ======================================================================= */
+async function enviar(accion, extra){
+  if (guardando) return;
+  guardando = true;
+  setEstadoBotones(true);
+
+  const items = Object.keys(pedidoActual.carrito).map(nombre => ({
+    producto: nombre,
+    cantidad: pedidoActual.carrito[nombre],
+    precio: precioDe(nombre)
   }));
-  if (items.length === 0) return;
+  if (items.length === 0 && accion !== "anular") {
+    guardando = false; setEstadoBotones(false);
+    return aviso("Agrega al menos un producto", true);
+  }
 
-  const btn = $("registrar");
-  btn.disabled = true; btn.textContent = "Guardando…";
-
-  const venta = {
-    vendedor, pago,
-    idVenta: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-    items
-  };
+  const body = Object.assign({
+    action: accion,
+    vendedor: vendedor,
+    cliente: pedidoActual.cliente || "",
+    items: items,
+  }, extra || {});
+  if (pedidoActual.idPedido) body.idPedido = pedidoActual.idPedido;
 
   try {
     const r = await fetch(URL_APP, {
       method: "POST",
-      // text/plain evita el bloqueo CORS de Apps Script
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(venta)
+      body: JSON.stringify(body)
     });
-    const data = await r.json();
-    if (!data.ok) throw new Error(data.error || "Error");
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || "Error");
 
-    // Limpiar y refrescar
-    for (const k in carrito) delete carrito[k];
-    pintar();
-    vibrar([15, 40, 15]);
-    aviso("✅ Venta registrada");
-    cargarTotalHoy();
-  } catch (err) {
-    vibrar([60, 50, 60]);
-    aviso("⚠️ No se pudo guardar. Revisa internet e intenta de nuevo.", true);
+    if (accion === "guardar") {
+      vibrar([12,30,12]);
+      aviso(`💾 Pedido #${d.pedido} guardado`);
+    } else if (accion === "cobrar") {
+      vibrar([15,40,15]);
+      aviso(`✅ Pedido #${d.pedido} cobrado · ${pesos(d.total)}`);
+    } else if (accion === "anular") {
+      vibrar([20,40,20]);
+      aviso(`Pedido anulado`);
+    }
+    irALista();
+  } catch (e) {
+    vibrar([60,50,60]);
+    aviso("⚠️ No se pudo guardar. Revisa internet.", true);
   } finally {
-    btn.textContent = "Registrar venta";
-    btn.disabled = Object.keys(carrito).length === 0;
+    guardando = false;
+    setEstadoBotones(false);
+  }
+}
+
+function setEstadoBotones(cargando){
+  ["btnGuardar","btnEfectivo","btnTransfer"].forEach(id => {
+    const el = $(id);
+    el.disabled = cargando || Object.keys(pedidoActual?.carrito || {}).length === 0;
+  });
+  if (cargando) {
+    $("btnGuardar").textContent  = "Guardando…";
+    $("btnEfectivo").textContent = "…";
+    $("btnTransfer").textContent = "…";
+  } else {
+    $("btnGuardar").textContent  = "💾 Guardar";
+    $("btnEfectivo").textContent = "💵 Efectivo";
+    $("btnTransfer").textContent = "📲 Transfer.";
+  }
+}
+
+$("btnGuardar").onclick  = () => enviar("guardar");
+$("btnEfectivo").onclick = () => enviar("cobrar", { pago: "Efectivo" });
+$("btnTransfer").onclick = () => enviar("cobrar", { pago: "Transferencia" });
+
+$("btnAnular").onclick = async () => {
+  if (!pedidoActual?.idPedido) return;
+  if (!confirm(`¿Anular el pedido #${pedidoActual.numPedido}?\nNo se puede deshacer.`)) return;
+  try {
+    const r = await fetch(URL_APP, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "anular", idPedido: pedidoActual.idPedido })
+    });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error);
+    aviso(`Pedido #${pedidoActual.numPedido} anulado`);
+    irALista();
+  } catch (e) {
+    aviso("⚠️ No se pudo anular", true);
   }
 };
 
-// ---- Total del día ----
-async function cargarTotalHoy(){
-  try {
-    const r = await fetch(URL_APP, { method: "GET" });
-    const d = await r.json();
-    $("totalHoy").textContent = pesos(d.totalHoy || 0);
-  } catch (e) {
-    $("totalHoy").textContent = "—";
-  }
-}
-$("btnActualizar").onclick = cargarTotalHoy;
-
-// ---- Aviso ----
+/* =======================================================================
+   Aviso (toast)
+   ======================================================================= */
 let tToast;
 function aviso(msg, esError){
   const t = $("toast");
@@ -341,13 +596,22 @@ function aviso(msg, esError){
   t.classList.toggle("error", !!esError);
   t.classList.add("ver");
   clearTimeout(tToast);
-  tToast = setTimeout(() => t.classList.remove("ver"), 2600);
+  tToast = setTimeout(() => t.classList.remove("ver"), 2800);
 }
 
-// Arranque
-pintar();
-if (URL_APP.startsWith("http")) cargarTotalHoy();
-else aviso("Falta pegar la URL de Apps Script en el código.", true);
+/* =======================================================================
+   Arranque
+   ======================================================================= */
+if (URL_APP.startsWith("http")) {
+  cargarEstado();
+  iniciarPoll();
+} else {
+  aviso("Falta pegar la URL de Apps Script en el código.", true);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && vista === "lista") cargarEstado();
+});
 </script>
 </body>
 </html>
