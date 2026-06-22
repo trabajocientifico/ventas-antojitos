@@ -28,6 +28,7 @@
     --cat-picar:     #D97706;  /* ámbar fritura */
     --cat-salchipapa:#2563EB;  /* azul */
     --cat-adiciones: #7C3AED;  /* púrpura topping */
+    --cat-bebidas:   #0EA5E9;  /* azul cielo */
     --cat-otros:     #6B7280;  /* gris pizarra */
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -340,6 +341,14 @@ const PRODUCTOS = [
   { categoria: "Adiciones", nombre: "Piña",         precio: 1000 },
   { categoria: "Adiciones", nombre: "Champiñones",  precio: 3000 },
 
+  // BEBIDAS
+  { categoria: "Bebidas", nombre: "Gaseosa $3.000", precio: 3000 },
+  { categoria: "Bebidas", nombre: "Gaseosa $3.500", precio: 3500 },
+  { categoria: "Bebidas", nombre: "Gaseosa $5.000", precio: 5000 },
+  { categoria: "Bebidas", nombre: "Gaseosa $7.000", precio: 7000 },
+  { categoria: "Bebidas", nombre: "Jugo $1.000",    precio: 1000 },
+  { categoria: "Bebidas", nombre: "Jugo $4.000",    precio: 4000 },
+
   // OTROS
   { categoria: "Otros", nombre: "Picada chunchulla", descripcion: "desde $12.000 — ajusta manualmente si es mayor", precio: 12000 },
 ];
@@ -547,6 +556,7 @@ const COLOR_CATEGORIA = {
   "Para picar": "var(--cat-picar)",
   "Salchipapa": "var(--cat-salchipapa)",
   "Adiciones":  "var(--cat-adiciones)",
+  "Bebidas":    "var(--cat-bebidas)",
   "Otros":      "var(--cat-otros)",
 };
 
