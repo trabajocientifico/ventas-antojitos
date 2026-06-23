@@ -238,6 +238,88 @@
   .toast.error{background:var(--rojo)}
 
   .oculto{display:none !important}
+
+  /* ===== Vista REPORTES ===== */
+  .rep-tope{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;border-bottom:1px solid var(--linea)}
+  .rep-tope .titulo{flex:1;font-weight:800;font-size:17px}
+  .rep-tope .atras{
+    background:none;border:none;font-size:24px;width:44px;height:44px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--carbon);font-weight:800
+  }
+  .tabs{
+    display:flex;gap:6px;padding:10px 16px 0;background:var(--crema)
+  }
+  .tabs button{
+    flex:1;padding:11px;border:2px solid var(--linea);background:#fff;border-radius:10px;
+    font-weight:700;font-size:14px;color:var(--carbon);cursor:pointer;min-height:44px;font-family:inherit
+  }
+  .tabs button.activo{border-color:var(--carbon);background:var(--carbon);color:var(--crema)}
+  .rep-cuerpo{padding:14px 16px 40px;display:flex;flex-direction:column;gap:14px}
+
+  .rep-controles{display:flex;align-items:center;gap:8px}
+  .rep-controles input[type=date]{
+    flex:1;padding:12px;border-radius:10px;border:2px solid var(--linea);background:#fff;
+    font-size:15px;font-weight:700;color:var(--carbon);outline:none;font-family:inherit
+  }
+  .rep-controles input[type=date]:focus{border-color:var(--maiz)}
+  .rep-controles button.nav{
+    width:44px;height:44px;border-radius:10px;border:2px solid var(--linea);background:#fff;
+    font-size:18px;font-weight:800;cursor:pointer;color:var(--carbon)
+  }
+  .rep-controles .rango{flex:1;text-align:center;font-weight:800;font-size:14px;color:var(--carbon)}
+  .rep-controles .rango small{display:block;font-size:10px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+
+  .kpi{
+    background:var(--carbon);color:var(--crema);border-radius:14px;padding:18px;
+    display:flex;flex-direction:column;gap:4px
+  }
+  .kpi small{font-size:11px;color:#b9b2a4;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+  .kpi b{font-size:28px;font-variant-numeric:tabular-nums;font-weight:800}
+  .kpi em{font-style:normal;font-size:12px;color:#b9b2a4;font-weight:600;margin-top:2px}
+
+  .chart-card{
+    background:#fff;border:1px solid var(--linea);border-radius:14px;padding:16px;
+    display:flex;flex-direction:column;gap:14px
+  }
+  .chart-card h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris);font-weight:800}
+
+  /* Gráfico tipo barras horizontales (día) */
+  .bars-h{display:flex;flex-direction:column;gap:12px}
+  .bar-row{display:flex;flex-direction:column;gap:4px}
+  .bar-row .lab{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--carbon)}
+  .bar-row .lab .val{font-variant-numeric:tabular-nums;color:var(--carbon)}
+  .bar-row .track{height:18px;background:var(--linea);border-radius:9px;overflow:hidden}
+  .bar-row .fill{height:100%;border-radius:9px;transition:width .3s ease}
+  .bar-row.efe .fill{background:var(--verde)}
+  .bar-row.tra .fill{background:var(--azul)}
+
+  /* Gráfico semanal: 7 barras verticales apiladas (efectivo + transferencia) */
+  .bars-v{display:flex;align-items:flex-end;gap:6px;height:160px;padding:8px 0 0}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+  .bar-col .stack{
+    width:100%;max-width:34px;background:var(--linea);border-radius:6px 6px 0 0;
+    display:flex;flex-direction:column-reverse;overflow:hidden;flex:1;min-height:2px
+  }
+  .bar-col .seg-efe{background:var(--verde);transition:height .3s ease}
+  .bar-col .seg-tra{background:var(--azul);transition:height .3s ease}
+  .bar-col .dia{font-size:11px;font-weight:800;color:var(--carbon);text-transform:uppercase;letter-spacing:.3px}
+  .bar-col .num{font-size:10px;font-weight:700;color:var(--gris);font-variant-numeric:tabular-nums;line-height:1.1;text-align:center}
+  .bar-col.hoy .dia{color:var(--maiz-osc)}
+
+  .leyenda{display:flex;gap:14px;justify-content:center;font-size:11px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.6px}
+  .leyenda span{display:flex;align-items:center;gap:6px}
+  .leyenda i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .leyenda .i-efe{background:var(--verde)}
+  .leyenda .i-tra{background:var(--azul)}
+
+  .rep-vacio{padding:30px 16px;text-align:center;color:var(--gris);font-size:13px}
+
+  /* Botón Reportes en cabecera de lista */
+  .seccion-titulo .acciones-sec{display:flex;gap:8px;align-items:center}
+  .seccion-titulo .btn-rep{
+    background:var(--carbon);color:var(--crema);border:none;border-radius:8px;
+    padding:6px 10px;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;cursor:pointer
+  }
 </style>
 </head>
 <body>
@@ -264,10 +346,74 @@
   <main id="vistaLista">
     <div class="seccion-titulo">
       <span>Cuentas abiertas</span>
-      <button id="btnActualizar">↻ Actualizar</button>
+      <div class="acciones-sec">
+        <button id="btnReportes" class="btn-rep">📊 Reportes</button>
+        <button id="btnActualizar">↻ Actualizar</button>
+      </div>
     </div>
     <div class="lista-cuentas" id="listaCuentas"></div>
     <button class="fab" id="btnNuevo">+ Nuevo pedido</button>
+  </main>
+
+  <!-- VISTA: reportes (KPIs y gráficos) -->
+  <main id="vistaReportes" class="oculto">
+    <div class="rep-tope">
+      <button class="atras" id="btnAtrasRep" aria-label="Volver">←</button>
+      <div class="titulo">Reportes</div>
+    </div>
+    <div class="tabs">
+      <button id="tabDia" class="activo">Por día</button>
+      <button id="tabSemana">Semana</button>
+    </div>
+
+    <!-- Reporte por DÍA -->
+    <div class="rep-cuerpo" id="repDia">
+      <div class="rep-controles">
+        <button class="nav" id="diaAnt" aria-label="Día anterior">‹</button>
+        <input type="date" id="fechaDia">
+        <button class="nav" id="diaSig" aria-label="Día siguiente">›</button>
+      </div>
+      <div class="kpi">
+        <small>Total vendido</small>
+        <b id="kpiTotal">$0</b>
+        <em id="kpiPedidos">0 pedidos</em>
+      </div>
+      <div class="chart-card">
+        <h3>Efectivo vs Transferencia</h3>
+        <div class="bars-h">
+          <div class="bar-row efe">
+            <div class="lab"><span>💵 Efectivo</span><span class="val" id="valEfe">$0</span></div>
+            <div class="track"><div class="fill" id="fillEfe" style="width:0%"></div></div>
+          </div>
+          <div class="bar-row tra">
+            <div class="lab"><span>📲 Transferencia</span><span class="val" id="valTra">$0</span></div>
+            <div class="track"><div class="fill" id="fillTra" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reporte por SEMANA -->
+    <div class="rep-cuerpo oculto" id="repSemana">
+      <div class="rep-controles">
+        <button class="nav" id="semAnt" aria-label="Semana anterior">‹</button>
+        <div class="rango"><span id="rangoSem">—</span><small>Lun a Dom</small></div>
+        <button class="nav" id="semSig" aria-label="Semana siguiente">›</button>
+      </div>
+      <div class="kpi">
+        <small>Total semana</small>
+        <b id="kpiSemTotal">$0</b>
+        <em id="kpiSemPedidos">0 pedidos</em>
+      </div>
+      <div class="chart-card">
+        <h3>Ventas por día</h3>
+        <div class="bars-v" id="barsSemana"></div>
+        <div class="leyenda">
+          <span><i class="i-efe"></i>Efectivo</span>
+          <span><i class="i-tra"></i>Transferencia</span>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- VISTA: detalle de un pedido (nuevo o existente) -->
@@ -363,7 +509,7 @@ const vibrar = (ms) => { if (navigator.vibrate) navigator.vibrate(ms); };
 let vendedor = localStorage.getItem("vendedor") || VENDEDORES[0];
 if (!VENDEDORES.includes(vendedor)) vendedor = VENDEDORES[0];
 
-let vista = "lista";              // "lista" | "pedido"
+let vista = "lista";              // "lista" | "pedido" | "reportes"
 let cuentasAbiertas = [];         // viene del backend
 let pedidoActual = null;          // { idPedido?, numPedido?, cliente, carrito, esNuevo }
 let pollHandle = null;
@@ -479,10 +625,25 @@ $("btnActualizar").onclick = () => { vibrar(6); cargarEstado(); };
 function irALista(){
   vista = "lista";
   $("vistaPedido").classList.add("oculto");
+  $("vistaReportes").classList.add("oculto");
   $("vistaLista").classList.remove("oculto");
   pedidoActual = null;
   window.scrollTo(0, 0);
   cargarEstado();
+}
+
+function irAReportes(){
+  vista = "reportes";
+  $("vistaLista").classList.add("oculto");
+  $("vistaPedido").classList.add("oculto");
+  $("vistaReportes").classList.remove("oculto");
+  window.scrollTo(0, 0);
+  // Por defecto: día = hoy, semana = semana actual
+  const hoy = fechaHoyISO();
+  $("fechaDia").value = hoy;
+  cargarReporteDia(hoy);
+  semanaInicio = lunesDe(new Date());
+  cargarReporteSemana();
 }
 
 function irAPedido(){
@@ -763,6 +924,148 @@ function aviso(msg, esError){
   clearTimeout(tToast);
   tToast = setTimeout(() => t.classList.remove("ver"), 2800);
 }
+
+/* =======================================================================
+   Vista REPORTES
+   ======================================================================= */
+let semanaInicio = null; // Date — lunes de la semana mostrada
+
+function fechaHoyISO(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fechaISO(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function parseISO(s){
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function lunesDe(d){
+  // getDay(): 0=dom, 1=lun, ..., 6=sab. Queremos lunes como inicio de semana.
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const dow = x.getDay();
+  const diff = (dow === 0 ? -6 : 1 - dow); // si es domingo, retroceder 6
+  x.setDate(x.getDate() + diff);
+  return x;
+}
+function addDias(d, n){
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() + n);
+  return x;
+}
+function fechaCorta(d){
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+async function fetchReporte(desde, hasta){
+  const u = `${URL_APP}?action=reporte&desde=${desde}&hasta=${hasta}`;
+  const r = await fetch(u, { method: "GET" });
+  const d = await r.json();
+  if (!d.ok) throw new Error(d.error || "Error en reporte");
+  return d.dias || [];
+}
+
+async function cargarReporteDia(fecha){
+  try {
+    const dias = await fetchReporte(fecha, fecha);
+    const d = dias[0] || { total:0, efectivo:0, transferencia:0, ventas:0 };
+    $("kpiTotal").textContent   = pesos(d.total);
+    $("kpiPedidos").textContent = `${d.ventas} ${d.ventas===1?'pedido':'pedidos'}`;
+    $("valEfe").textContent     = pesos(d.efectivo);
+    $("valTra").textContent     = pesos(d.transferencia);
+    const max = Math.max(d.efectivo, d.transferencia, 1);
+    $("fillEfe").style.width = (d.efectivo / max * 100) + "%";
+    $("fillTra").style.width = (d.transferencia / max * 100) + "%";
+  } catch (e) {
+    aviso("⚠️ " + e.message, true);
+  }
+}
+
+async function cargarReporteSemana(){
+  if (!semanaInicio) semanaInicio = lunesDe(new Date());
+  const lun = semanaInicio;
+  const dom = addDias(lun, 6);
+  const desde = fechaISO(lun);
+  const hasta = fechaISO(dom);
+  $("rangoSem").textContent = `${fechaCorta(lun)} – ${fechaCorta(dom)}`;
+  try {
+    const dias = await fetchReporte(desde, hasta);
+    const totalSem = dias.reduce((s,d)=>s+d.total, 0);
+    const pedSem   = dias.reduce((s,d)=>s+d.ventas, 0);
+    $("kpiSemTotal").textContent   = pesos(totalSem);
+    $("kpiSemPedidos").textContent = `${pedSem} ${pedSem===1?'pedido':'pedidos'}`;
+
+    const cont = $("barsSemana");
+    cont.innerHTML = "";
+    const maxDia = Math.max(...dias.map(d => d.total), 1);
+    const hoyISO = fechaHoyISO();
+    const nombres = ["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"];
+    dias.forEach((d, i) => {
+      const col = document.createElement("div");
+      col.className = "bar-col" + (d.fecha === hoyISO ? " hoy" : "");
+      const pctTotal = (d.total / maxDia) * 100;
+      const efePct   = d.total > 0 ? (d.efectivo / d.total) * 100 : 0;
+      const traPct   = d.total > 0 ? (d.transferencia / d.total) * 100 : 0;
+      // Solo el stack ocupa el % de altura proporcional al total del día.
+      col.innerHTML = `
+        <div class="num">${d.total ? '$'+Math.round(d.total/1000)+'k' : ''}</div>
+        <div class="stack" style="height:${pctTotal}%">
+          <div class="seg-efe" style="height:${efePct}%"></div>
+          <div class="seg-tra" style="height:${traPct}%"></div>
+        </div>
+        <div class="dia">${nombres[i]}</div>
+      `;
+      cont.appendChild(col);
+    });
+  } catch (e) {
+    aviso("⚠️ " + e.message, true);
+  }
+}
+
+// Eventos vista Reportes
+$("btnReportes").onclick = () => { vibrar(8); irAReportes(); };
+$("btnAtrasRep").onclick = () => { irALista(); };
+
+$("tabDia").onclick = () => {
+  $("tabDia").classList.add("activo");
+  $("tabSemana").classList.remove("activo");
+  $("repDia").classList.remove("oculto");
+  $("repSemana").classList.add("oculto");
+};
+$("tabSemana").onclick = () => {
+  $("tabSemana").classList.add("activo");
+  $("tabDia").classList.remove("activo");
+  $("repSemana").classList.remove("oculto");
+  $("repDia").classList.add("oculto");
+  cargarReporteSemana();
+};
+
+$("fechaDia").addEventListener("change", () => {
+  cargarReporteDia($("fechaDia").value);
+});
+$("diaAnt").onclick = () => {
+  const d = addDias(parseISO($("fechaDia").value), -1);
+  $("fechaDia").value = fechaISO(d);
+  cargarReporteDia($("fechaDia").value);
+  vibrar(6);
+};
+$("diaSig").onclick = () => {
+  const d = addDias(parseISO($("fechaDia").value), 1);
+  $("fechaDia").value = fechaISO(d);
+  cargarReporteDia($("fechaDia").value);
+  vibrar(6);
+};
+$("semAnt").onclick = () => {
+  semanaInicio = addDias(semanaInicio, -7);
+  cargarReporteSemana();
+  vibrar(6);
+};
+$("semSig").onclick = () => {
+  semanaInicio = addDias(semanaInicio, 7);
+  cargarReporteSemana();
+  vibrar(6);
+};
 
 /* =======================================================================
    Arranque

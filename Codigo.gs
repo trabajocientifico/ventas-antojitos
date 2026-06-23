@@ -40,8 +40,14 @@ function doPost(e) {
   }
 }
 
-/** Devuelve total del día, # de pedidos cobrados y la lista de cuentas abiertas. */
-function doGet() {
+/**
+ * GET sin parámetros: estado actual (total del día, cuentas abiertas).
+ * GET con ?action=reporte&desde=YYYY-MM-DD&hasta=YYYY-MM-DD: reporte por día en el rango.
+ */
+function doGet(e) {
+  if (e && e.parameter && e.parameter.action === 'reporte') {
+    return reporte_(e.parameter.desde, e.parameter.hasta);
+  }
   const hoja = obtenerHoja_();
   const datos = hoja.getDataRange().getValues();
   const hoy = formatoHoy_();
@@ -99,6 +105,54 @@ function doGet() {
     ventas: Object.keys(pagadasHoy).length,
     abiertos: abiertos
   });
+}
+
+/**
+ * Reporte de ventas COBRADAS agrupadas por día en el rango [desde, hasta] (inclusivo).
+ * Devuelve { ok, dias: [{ fecha, total, efectivo, transferencia, ventas }] }
+ * con una entrada por cada día del rango (incluso si no hubo ventas).
+ */
+function reporte_(desde, hasta) {
+  if (!desde) desde = formatoHoy_();
+  if (!hasta) hasta = desde;
+  if (desde > hasta) { const t = desde; desde = hasta; hasta = t; }
+
+  const hoja = obtenerHoja_();
+  const datos = hoja.getDataRange().getValues();
+
+  const porDia = {};       // fecha -> { total, efectivo, transferencia, pedidos:Set }
+  for (let i = 1; i < datos.length; i++) {
+    const f = datos[i];
+    if (String(f[COL.estado] || '').toLowerCase() !== 'pagado') continue;
+    const fc = aFecha_(f[COL.fechaCobro]);
+    if (!fc) continue;
+    const k = Utilities.formatDate(fc, ZONA_HORARIA, 'yyyy-MM-dd');
+    if (k < desde || k > hasta) continue;
+    if (!porDia[k]) porDia[k] = { total: 0, efectivo: 0, transferencia: 0, pedidos: {} };
+    const sub = Number(f[COL.subtotal]) || 0;
+    porDia[k].total += sub;
+    if (String(f[COL.pago] || '').toLowerCase().indexOf('efect') >= 0) porDia[k].efectivo += sub;
+    else porDia[k].transferencia += sub;
+    const idP = f[COL.idPedido];
+    if (idP) porDia[k].pedidos[idP] = true;
+  }
+
+  const dias = [];
+  const cursor = new Date(desde + 'T00:00:00');
+  const fin = new Date(hasta + 'T00:00:00');
+  while (cursor.getTime() <= fin.getTime()) {
+    const k = Utilities.formatDate(cursor, ZONA_HORARIA, 'yyyy-MM-dd');
+    const d = porDia[k] || { total: 0, efectivo: 0, transferencia: 0, pedidos: {} };
+    dias.push({
+      fecha: k,
+      total: d.total,
+      efectivo: d.efectivo,
+      transferencia: d.transferencia,
+      ventas: Object.keys(d.pedidos).length
+    });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return responder_({ ok: true, dias: dias });
 }
 
 // ===== ACCIONES =====
